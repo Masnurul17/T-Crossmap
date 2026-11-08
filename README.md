@@ -3,7 +3,7 @@
 
 **A Taguchi-Based Design-of-Experiments Framework for Point-Cloud Preprocessing of a Cross-Modal Mapper in RGB-3D Defect Detection**
 <p align="center">
-  <img src="figures/fig1_framework_illustr.png" width="90%" alt="T-CrossMap framework">
+  <img src="fig1_framework_illustr.png" width="90%" alt="T-CrossMap framework">
 </p>
 
 **Figure 1.** Overview of T-CrossMap. RGB and organised XYZ inputs pass through the preprocessing factors A–C (background removal, RANSAC threshold, XYZ interpolation) and the Point-MAE factors D–F (PFA neighbours, FPS centres, points per group). Frozen DINO ViT-B/8 and Point-MAE features are mapped across modalities by two MLP mappers; their disagreement gives the anomaly map Ψ = Ψ2D · Ψ3D and the image score s = max Ψ. I-AUROC, AUPRO@30% and latency from each run feed the Taguchi–grey relational analysis, which selects the optimum levels of A–F. *The example images and maps are illustrative, not detector output.*
@@ -119,7 +119,7 @@ The standard deviation across seeds is ≤ 0.002 for every setting.
 ### Deployment scenario
 
 <p align="center">
-  <img src="figures/fig_deploy.png" width="95%" alt="T-CrossMap deployment scenario">
+  <img src="fig_deploy.png" width="95%" alt="T-CrossMap deployment scenario">
 </p>
 
 **Figure 2.** Proposed deployment of T-CrossMap with one top-down Intel RealSense RGB-D camera and one GPU server. (a) Inline inspection of bagels on a conveyor: after plane removal, each product becomes one 3D blob that is cropped and scored separately. (b) Station inspection in a bolt workshop, one part per scan on a flat surface. **Inspection loop:** capture → preprocessing (optimum A–C) → T-CrossMap inference (optimum D–F) → anomaly map and score → decision against a threshold. **Commissioning** is done once per product with defect-free parts only: capture a few hundred normal samples, run the L18 screening and L9 refinement, train the mappers, and set the decision threshold on nominal validation scores. *This is a proposed scheme; the scenes are illustrative and the system was evaluated on MVTec 3D-AD, not on a production line.*
