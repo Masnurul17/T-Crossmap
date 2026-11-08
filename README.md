@@ -1,14 +1,15 @@
-# T-Crossmap
 # T-CrossMap
 
 **A Taguchi-Based Design-of-Experiments Framework for Point-Cloud Preprocessing of a Cross-Modal Mapper in RGB-3D Defect Detection**
+
+> Manuscript under preparation for the *Journal of Engineering and Technological Sciences* (JETS, ITB).
+> Code, configuration files and trained mappers will be released after publication.
+
 <p align="center">
   <img src="fig1_framework_illustr.png" width="90%" alt="T-CrossMap framework">
 </p>
 
 **Figure 1.** Overview of T-CrossMap. RGB and organised XYZ inputs pass through the preprocessing factors A–C (background removal, RANSAC threshold, XYZ interpolation) and the Point-MAE factors D–F (PFA neighbours, FPS centres, points per group). Frozen DINO ViT-B/8 and Point-MAE features are mapped across modalities by two MLP mappers; their disagreement gives the anomaly map Ψ = Ψ2D · Ψ3D and the image score s = max Ψ. I-AUROC, AUPRO@30% and latency from each run feed the Taguchi–grey relational analysis, which selects the optimum levels of A–F. *The example images and maps are illustrative, not detector output.*
-> Manuscript under preparation for the *Journal of Engineering and Technological Sciences* (JETS, ITB).
-> Code, configuration files and trained mappers will be released after publication.
 
 ---
 
@@ -116,13 +117,15 @@ The standard deviation across seeds is ≤ 0.002 for every setting.
 - On the AGX, CPU preprocessing takes more than half of the baseline latency. The all-GPU A2 setting is therefore 1.94× faster than the baseline and has the most uniform latency across categories (141–155 ms, against 174–399 ms for the baseline).
 - Energy = mean module power (VDD_GPU_SOC + VDD_CPU_CV + VIN_SYS_5V0) × GPU latency. It excludes the unmetered CPU preprocessing of the baseline and A1, so the comparison is conservative toward A2.
 - Accuracy on the AGX matches the server.
+
 ### Deployment scenario
 
 <p align="center">
   <img src="fig_deploy.png" width="95%" alt="T-CrossMap deployment scenario">
 </p>
 
-**Figure 2.** Proposed deployment of T-CrossMap with one top-down Intel RealSense RGB-D camera and one GPU server. (a) Inline inspection of bagels on a conveyor: after plane removal, each product becomes one 3D blob that is cropped and scored separately. (b) Station inspection in a bolt workshop, one part per scan on a flat surface. **Inspection loop:** capture → preprocessing (optimum A–C) → T-CrossMap inference (optimum D–F) → anomaly map and score → decision against a threshold. **Commissioning** is done once per product with defect-free parts only: capture a few hundred normal samples, run the L18 screening and L9 refinement, train the mappers, and set the decision threshold on nominal validation scores. *This is a proposed scheme; the scenes are illustrative and the system was evaluated on MVTec 3D-AD, not on a production line.*
+**Figure 2.** Proposed deployment of T-CrossMap with one top-down Intel RealSense RGB-D camera and one GPU server. (a) Inline inspection of bagels on a conveyor: after plane removal, each product becomes one 3D blob that is cropped and scored separately. (b) Station inspection in a bolt workshop, one part per scan on a flat surface. **Inspection loop:** capture → preprocessing (optimum A–C) → T-CrossMap inference (optimum D–F) → anomaly map and score → decision against a threshold θ (labelled τ in the figure; not the RANSAC threshold τ of factor B). **Commissioning** is done once per product with defect-free parts only: capture a few hundred normal samples, run the L18 screening and L9 refinement, train the mappers, and set the decision threshold on nominal validation scores. *This is a proposed scheme; the scenes are illustrative and the system was evaluated on MVTec 3D-AD, not on a production line.*
+
 ## Limitations
 
 - The selected settings are the best compromise **within the tested factor space**, not a global optimum.
